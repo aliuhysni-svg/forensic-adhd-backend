@@ -33,3 +33,32 @@ def create_session():
         "access_code": access_code,
         "status": "created"
     }
+sessions = {}
+
+@app.get("/create-session")
+def create_session():
+    session_id = str(uuid.uuid4())
+    access_code = str(random.randint(10000000, 99999999))
+
+    sessions[access_code] = {
+        "session_id": session_id,
+        "answers": {},
+        "status": "created"
+    }
+
+    return {
+        "session_id": session_id,
+        "access_code": access_code,
+        "status": "created"
+    }
+
+
+@app.get("/load-session/{code}")
+def load_session(code: str):
+
+    session = sessions.get(code)
+
+    if not session:
+        return {"error": "Session not found"}
+
+    return session
