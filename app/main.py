@@ -19,11 +19,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+sessions = {}
+
 @app.get("/")
 def root():
     return {"message": "Forensic ADHD Backend Running"}
-
-sessions = {}
 
 @app.get("/create-session")
 def create_session():
@@ -44,26 +44,24 @@ def create_session():
 
 @app.get("/load-session/{code}")
 def load_session(code: str):
+
     session = sessions.get(code)
 
     if not session:
         return {"error": "Session not found"}
 
     return session
-from fastapi import Body
+
 
 @app.post("/save-answer/{code}")
-def save_answer(code: str, data: dict = Body(...)):
+def save_answer(code: str, answers: dict):
 
     session = sessions.get(code)
 
     if not session:
         return {"error": "Session not found"}
 
-    if "answers" not in session:
-        session["answers"] = {}
-
-    session["answers"].update(data)
+    session["answers"].update(answers)
 
     return {
         "status": "saved",
