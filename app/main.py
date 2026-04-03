@@ -50,3 +50,22 @@ def load_session(code: str):
         return {"error": "Session not found"}
 
     return session
+from fastapi import Body
+
+@app.post("/save-answer/{code}")
+def save_answer(code: str, data: dict = Body(...)):
+
+    session = sessions.get(code)
+
+    if not session:
+        return {"error": "Session not found"}
+
+    if "answers" not in session:
+        session["answers"] = {}
+
+    session["answers"].update(data)
+
+    return {
+        "status": "saved",
+        "answers": session["answers"]
+    }
